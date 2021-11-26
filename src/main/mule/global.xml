@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:apikit-soap="http://www.mulesoft.org/schema/mule/apikit-soap"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/apikit-soap http://www.mulesoft.org/schema/mule/apikit-soap/current/mule-apikit-soap.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="435c05df-8030-4879-a2ca-47bc39ddf63b" >
+		<http:listener-connection host="${http.host}" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="05cbb057-ece7-4a44-ad8c-f82ce50e8a13" >
+		<db:my-sql-connection host="${DB.host}" port="${DB.port}" user="${secure::DB.username}" password="${secure::DB.password}" database="${DB.name}" />
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="997042b6-6d77-4292-8a3e-3e9e65654346" file="config/${env}-properties.yaml" />
+	<apikit-soap:config name="APIKit_for_SOAP_Configuration" service="${soap.service}" port="${soap.port}" doc:name="APIKit for SOAP Configuration" doc:id="c653c686-e4da-4e62-9bf8-62493ff6dbca" soapVersion="SOAP11" wsdlLocation="${soap.wsdlLocation}" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="f7e1ff33-0b2e-4fae-9243-e4c0c888894b" file="config/${env}-properties.yaml" key="${encrypt.key}" />
+</mule>

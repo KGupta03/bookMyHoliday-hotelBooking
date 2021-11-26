@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	
+	<flow name="getHotels" doc:id="6f2fb00d-a09f-47af-967a-8f38af626461" >
+		<logger level="INFO" doc:name="start" doc:id="1be1b6fc-988f-43ab-9e3c-00fd3bd6738e" message="#[payload]"/>
+		<ee:transform doc:name="SetQuery" doc:id="f8c4c047-f8a9-4d91-980a-b59c205e43be" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sqlQuery" ><![CDATA[%dw 2.0
+ns ns0 http://localhost:8081/hotel-booking-service/
+---
+"SELECT * FROM Hotels WHERE city=" ++ "'" ++ payload.body.ns0#getHotels.city ++ "'"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Get List of hotels" doc:id="0a3c7318-292f-4c03-9219-e128dc20499f" config-ref="Database_Config">
+			<reconnect frequency="${DB.reconnection-strategy-frequency-ms}" count="${DB.reconnection-strategy-attempts}"/>
+			<db:sql ><![CDATA[#[vars.sqlQuery]]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Creating XML Response" doc:id="67f21037-5d7c-4ad3-a281-0b93f1121c11" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+ns ns0 http://localhost:8081/hotel-booking-service/
+---
+{
+	body: {
+		ns0#getHotelsResponse: {
+			hotelName: payload[0].hotelName,
+			address: payload[0].address,
+			contactNo: payload[0].contactNo,
+			pincode: payload[0].pincode,
+			city: payload[0].city,
+			roomDetails: {
+				(roomDetailsType: payload map (item,index) -> {
+					roomType: item.roomType,
+				        price: item.price,
+				discount: item.discount
+			})
+			}}
+	} write "application/xml"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="c0bd38be-a06c-44e0-9199-842ca68505c1" message="#[payload]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d075b59a-6489-4671-a6b2-3b4876b8c5ad" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION">
+				<ee:transform doc:name="Transform Message" doc:id="a6cdc397-753c-4635-a282-8d31ccef3e8f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+ns ns0 http://localhost:8081/hotel-booking-service/
+---
+{
+	body: {
+		ns0#getHotelsResponse: {
+			"message": error.description,
+			"errorType": error.errorType.identifier
+			}
+	} write "application/xml"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="bookHotel" doc:id="cda32743-13c6-4ec0-9a9f-f6ab32f84fea" >
+		<logger level="INFO" doc:name="start" doc:id="f177d791-c058-40c3-bfac-7e586914f6b7" message="#[payload]" />
+		<db:insert doc:name="Insert Booking data" doc:id="aec3711c-9cc7-4db7-8ba9-d54501fc3c98" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO BookHotel (hotelName, hotelContactNo, Name, mobileNo,
+age, roomType, checkinDateTime, address, checkoutDateTime, paymentType, amountPayable) VALUES (:hotelName, :hotelContactNo, :Name, :mobileNo,
+:age, :roomType, :checkinDateTime, :address, :checkoutDateTime, :paymentType, :amountPayable)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/xml
+ns ns0 http://localhost:8081/hotel-booking-service/
+---
+{
+		hotelName: payload.body.ns0#bookHotel.hotelName,
+		hotelContactNo: payload.body.ns0#bookHotel.hotelContactNo,
+		Name: payload.body.ns0#bookHotel.travellerName,
+		mobileNo: payload.body.ns0#bookHotel.mobileNo,
+		age: payload.body.ns0#bookHotel.age,
+		roomType: payload.body.ns0#bookHotel.roomType,
+		checkinDateTime: payload.body.ns0#bookHotel.checkinDateTime,
+		address: payload.body.ns0#bookHotel.address,
+		checkoutDateTime: payload.body.ns0#bookHotel.checkoutDateTime,
+		paymentType: payload.body.ns0#bookHotel.paymentType,
+		amountPayable: payload.body.ns0#bookHotel.amountPayable
+}]]]></db:input-parameters>
+		</db:insert>
+		<set-variable value="#[uuid()]" doc:name="bookingId" doc:id="c5e0fdef-16d1-4a6d-9450-77f829c9f3ff" variableName="id"/>
+		<ee:transform doc:name="XML Response" doc:id="b4184c10-e53f-4bdd-8b75-0d9949dc3925" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+ns ns0 http://localhost:8081/hotel-booking-service/
+---
+{
+	body: {
+		ns0#bookHotelResponse: {
+			message: "Hotel Booked Successfully!!!",
+			bookingId: vars.id
+			}
+	} write "application/xml"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="f5a01dea-4355-486d-af1d-468fd80ba5b4" message="#[payload]" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f667ea09-f70c-431a-8c48-8140eeb60228" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION" >
+				<ee:transform doc:name="Transform Message" doc:id="21f1cc4c-701e-4236-99eb-1eafeb4ce208" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+ns ns0 http://localhost:8081/hotel-booking-service/
+---
+{
+	body: {
+		ns0#getHotelsResponse: {
+			"message": error.description,
+			"errorType": error.errorType.identifier
+			}
+	} write "application/xml"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

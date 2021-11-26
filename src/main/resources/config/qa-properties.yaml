@@ -1,0 +1,25 @@
+DB:
+ host: "sql6.freemysqlhosting.net"
+ port: "3306"
+ name: "sql6454225"
+ username: "![Ssk77P7MMaAXK4TJ7cSTig==]"
+ password: "![xQXdhXl8IMcqsI4u35GyyA==]"
+ reconnection-strategy-frequency-ms : "2000"
+ reconnection-strategy-attempts : "2"
+
+soap:
+  wsdlLocation: "hotel-booking-service.wsdl"
+  service: "hotel-booking-service"
+  port: "hotel-booking-serviceSOAP"
+  
+http:
+ host: "0.0.0.0"
+ port: "8081"
+
+cloudhub:
+ applicationName: "hotelBooking-dev-sys"
+ environment: "Sandbox"
+ region: "us-east-2"
+ workers: "1"
+ workerType: "MICRO"
+ objectStoreV2: "true"
