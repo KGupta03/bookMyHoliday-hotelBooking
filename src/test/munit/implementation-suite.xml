@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-suite.xml" />
+	<munit:test name="getHotels-test" doc:id="acb54115-fb69-4a31-9bce-6d933ef833f6" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Get List of hotels" doc:id="eaf5c1a4-104e-44d9-9e06-262b6dd3bba1" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0a3c7318-292f-4c03-9219-e128dc20499f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://getHotelstest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sqlQuery" value="#[output application/java --- readUrl('classpath://getHotelstest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="49bcc04b-6036-42ad-b463-95f2c7335d0a" >
+				<munit:payload value="#[output application/java --- readUrl('classpath://getHotelstest\set-event_payload.dwl')]" mediaType="application/java" />
+				<munit:attributes value="#[output application/java --- readUrl('classpath://getHotelstest\set-event_attributes.dwl')]" mediaType="application/java" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getHotels" doc:id="123ea051-0945-4fc1-83fd-9db6333245ed" name="getHotels"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="8c42ec24-b8ff-415d-83b4-23f89f213948" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getHotelstest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Creating XML Response" doc:id="307bed3e-2b2f-4764-9ccf-13dcc4c3f7ff" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="67f21037-5d7c-4ad3-a281-0b93f1121c11" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify SetQuery" doc:id="77f76d63-5fe9-4d3a-9bc2-7848c6dac86f" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f8c4c047-f8a9-4d91-980a-b59c205e43be" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="bookHotel-test" doc:id="ed130909-72a3-480d-8b35-98e4b1d103be" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock bookingId" doc:id="7145df23-cef4-4a5d-ab44-fe4d3d3fd531" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c5e0fdef-16d1-4a6d-9450-77f829c9f3ff" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://bookHoteltest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Insert Booking data" doc:id="60b21286-401e-4e72-84eb-ca6e515837b8" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="aec3711c-9cc7-4db7-8ba9-d54501fc3c98" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://bookHoteltest\mock_payload2.dwl')]" mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="af6e2119-5eed-4541-9790-e770be4b8274" >
+				<munit:payload value="#[output application/java --- readUrl('classpath://bookHoteltest\set-event_payload2.dwl')]" mediaType="application/java" />
+				<munit:attributes value="#[output application/java --- readUrl('classpath://bookHoteltest\set-event_attributes2.dwl')]" mediaType="application/java" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookHotel" doc:id="0004e0c5-7f1f-4212-9aa2-977415687921" name="bookHotel"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a31e719d-6622-448b-a427-31e232f63439" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookHoteltest::assert_expression_payload2
+---
+assert_expression_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify XML Response" doc:id="952fec96-6917-47c3-9ac8-d1b68dbd5f8c" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b4184c10-e53f-4bdd-8b75-0d9949dc3925" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getHotels:\APIKit_for_SOAP_Configuration-test" doc:id="b0275b05-9eaa-404b-b2b9-0bcdd9b0ed10" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock getHotels" doc:id="100f927e-cea7-43d0-aff6-1e931f154f5c" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="90c49df6-0403-42e2-a5a3-3c258e75362b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://getHotelsAPIKitforSOAPConfigurationtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sqlQuery" value="#[output application/java --- readUrl('classpath://getHotelsAPIKitforSOAPConfigurationtest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="7f926d32-92ec-4e5b-88c8-e80cccf09d59" >
+				<munit:payload value="#[output application/java --- readUrl('classpath://getHotelsAPIKitforSOAPConfigurationtest\set-event_payload.dwl')]" mediaType="application/java" />
+				<munit:attributes value="#[output application/java --- readUrl('classpath://getHotelsAPIKitforSOAPConfigurationtest\set-event_attributes.dwl')]" mediaType="application/java" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getHotels:\APIKit_for_SOAP_Configuration" doc:id="4d0d90ee-3e5f-4867-b1b3-2d44f4e6797f" name="getHotels:\APIKit_for_SOAP_Configuration"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="8c08a3f4-9e81-43d5-b985-69c9f2300d89" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getHotelsAPIKitforSOAPConfigurationtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="bookHotel:\APIKit_for_SOAP_Configuration-test" doc:id="273dc878-d478-4b9b-8526-cbe623752d9f" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock bookHotel" doc:id="74f445e9-7626-45c0-8e2c-990c578e61ba" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0f4649b0-7823-448a-b0f7-6c3542668866" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://bookHotelAPIKitforSOAPConfigurationtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="id" value="#[output application/java --- readUrl('classpath://bookHotelAPIKitforSOAPConfigurationtest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="fa4701cd-7727-4025-ad12-12f6f88d3208" >
+				<munit:payload value="#[output application/java --- readUrl('classpath://bookHotelAPIKitforSOAPConfigurationtest\set-event_payload.dwl')]" mediaType="application/java" />
+				<munit:attributes value="#[output application/java --- readUrl('classpath://bookHotelAPIKitforSOAPConfigurationtest\set-event_attributes.dwl')]" mediaType="application/java" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookHotel:\APIKit_for_SOAP_Configuration" doc:id="4ff46cbc-977a-4596-afcb-374dda7354cf" name="bookHotel:\APIKit_for_SOAP_Configuration"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="d6c3cbcd-37db-4b9c-a72a-aa7188f775d0" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookHotelAPIKitforSOAPConfigurationtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="api-main-test" doc:id="cc0b9766-1582-49dc-969c-a2d201a22769" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock SOAP Router" doc:id="4a1fdc5a-4b70-4b36-9ac9-049b3cc9844f" processor="apikit-soap:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e051797c-9687-4f6d-8d2b-53d8613ce979" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output text/xml --- readUrl('classpath://apimaintest\mock_payload.dwl')]" mediaType="text/xml" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://apimaintest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="sqlQuery" value="#[output application/java --- readUrl('classpath://apimaintest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="6d6f0c06-8334-436e-9a8e-91e057411f5c" >
+				<munit:payload value="#[output text/xml --- readUrl('classpath://apimaintest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="text/xml" />
+				<munit:attributes value="#[readUrl('classpath://apimaintest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to api-main" doc:id="533c8d41-97cf-471a-8730-13a526d6f764" name="api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="7ed986f1-1858-4485-8cfe-6a2a33ef9e81" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import apimaintest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-suiteTest" doc:id="445936b5-b305-4ecd-8924-8765980e6e2a" description="connectivity error">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="adfa4361-3c09-47c0-8511-86edb68a1af8" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="aec3711c-9cc7-4db7-8ba9-d54501fc3c98" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- []]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference to getHotels" doc:id="08710366-66c4-4d1c-8989-3676c7a81421" name="bookHotel"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="e55e2a4c-2886-4620-a978-511e4614c9c7" processor="ee:transform" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="32ac961b-2905-41b1-b12e-0e46c0eab97e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

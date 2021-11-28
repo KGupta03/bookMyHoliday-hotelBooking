@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit-soap="http://www.mulesoft.org/schema/mule/apikit-soap" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/apikit-soap http://www.mulesoft.org/schema/mule/apikit-soap/current/mule-apikit-soap.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
     
-    <flow name="api-main">
+    <flow name="api-main" doc:id="ea5cc60d-9e9a-43ad-bf7c-261beb243c5c">
         <http:listener path="/hotel-booking-service/hotel-booking-serviceSOAP" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[attributes.additionalTransportData.statusCode default 200]">
                 <http:headers><![CDATA[#[attributes.protocolHeaders default {}]]]></http:headers>
@@ -11,7 +11,7 @@
                 <http:headers><![CDATA[#[attributes.protocolHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit-soap:router config-ref="APIKit_for_SOAP_Configuration">
+        <apikit-soap:router config-ref="APIKit_for_SOAP_Configuration" doc:id="e051797c-9687-4f6d-8d2b-53d8613ce979">
             <apikit-soap:attributes><![CDATA[#[%dw 2.0
               output application/java
               ---
@@ -22,7 +22,7 @@
             }]]]></apikit-soap:attributes>
         </apikit-soap:router>
     </flow>
-    <flow name="getHotels:\APIKit_for_SOAP_Configuration">
+    <flow name="getHotels:\APIKit_for_SOAP_Configuration" doc:id="cd800756-0752-4a2f-97fe-d99a93a025dd">
 		<flow-ref doc:name="getHotels" doc:id="90c49df6-0403-42e2-a5a3-3c258e75362b" name="getHotels"/>
     </flow>
     <flow name="bookHotel:\APIKit_for_SOAP_Configuration">

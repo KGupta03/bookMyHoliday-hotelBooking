@@ -54,8 +54,8 @@ ns ns0 http://localhost:8081/hotel-booking-service/
 		</ee:transform>
 		<logger level="INFO" doc:name="end" doc:id="c0bd38be-a06c-44e0-9199-842ca68505c1" message="#[payload]"/>
 		<error-handler >
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d075b59a-6489-4671-a6b2-3b4876b8c5ad" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION">
-				<ee:transform doc:name="Transform Message" doc:id="a6cdc397-753c-4635-a282-8d31ccef3e8f" >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a856868f-56dd-4ce0-bdc3-4744f5d8e471" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION">
+				<ee:transform doc:name="Transform Message" doc:id="6bd0c101-a6ee-4b93-a155-321090e8c2fe" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
@@ -117,8 +117,8 @@ ns ns0 http://localhost:8081/hotel-booking-service/
 		</ee:transform>
 		<logger level="INFO" doc:name="end" doc:id="f5a01dea-4355-486d-af1d-468fd80ba5b4" message="#[payload]" />
 		<error-handler >
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f667ea09-f70c-431a-8c48-8140eeb60228" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION" >
-				<ee:transform doc:name="Transform Message" doc:id="21f1cc4c-701e-4236-99eb-1eafeb4ce208" >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="539fe185-15ac-45c1-9ba8-a140c60cd515" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION">
+				<ee:transform doc:name="Transform Message" doc:id="32ac961b-2905-41b1-b12e-0e46c0eab97e" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/java
